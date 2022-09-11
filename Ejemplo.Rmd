@@ -1,0 +1,62 @@
+```{R}
+install.packages("quantreg")
+library(quantreg)
+data(mtcars)
+```
+
+```{}
+https://www.r-bloggers.com/2019/01/quantile-regression-in-r-2/
+We can perform quantile regression using the rq function. We can specify a tau option which tells rq which conditional quantile we want. The default value for tau is 0.5 which corresponds to median regression. Below, we fit a quantile regression of miles per gallon vs. car weight:
+```
+
+```{R}
+rqfit <- rq(mpg ~ wt, data = mtcars)
+rqfit
+```
+
+```{}
+Printing the fitted object to the console gives some rudimentary information on the regression fit. We can use the summary function to get more information (just like we do for the lm function)
+```
+
+```{R}
+summary(rqfit)
+```
+
+```{}
+In the table above, the lower bd and upper bd columns represent the endpoints of confidence intervals for the model coefficients. There are a number of ways for these confidence intervals to be computed; this can be specified using the seoption when invoking the summary function. The default value is se="rank", with the other options being “iid”, “nid”, “ker”, “boot” and “BLB” (type ?summary.rq for details).
+```
+
+```{R}
+###This next block of code plots the quantile regression line in blue and the linear regression line in red:
+plot(mpg ~ wt, data = mtcars, pch = 16, main = "mpg ~ wt")
+abline(lm(mpg ~ wt, data = mtcars), col = "red", lty = 2)
+abline(rq(mpg ~ wt, data = mtcars), col = "blue", lty = 2)
+legend("topright", legend = c("lm", "rq"), col = c("red", "blue"), lty = 2)
+
+```
+```{R}
+###As I mentioned before, the tau option tells rq which conditional quantile we want. What is interesting is that we can set tau to be a vector and rq will give us the fits for all those quantiles:
+multi_rqfit <- rq(mpg ~ wt, data = mtcars, tau = seq(0, 1, by = 0.1))
+multi_rqfit
+```
+
+```{R}
+###Median regression (i.e. 50th quantile regression) is sometimes preferred to linear regression because it is “robust to outliers”. The next plot illustrates this. We add two outliers to the data (colored in orange) and see how it affects our regressions. The dotted lines are the fits for the original data, while the solid lines are for the data with outliers. As before, red is for linear regression while blue is for quantile regression. See how the linear regression fit shifts a fair amount compared to the median regression fit (which barely moves!)?
+
+y <- c(mtcars$mpg, 40, 36)
+x <- c(mtcars$wt, 5, 4)
+plot(y ~ x, pch = 16, main = "mpg ~ wt")
+points(c(5, 4), c(40, 36), pch = 16, col = "dark orange")
+abline(lm(mpg ~ wt, data = mtcars), col = "red", lty = 2)
+abline(lm(y ~ x), col = "red")
+abline(rq(mpg ~ wt, data = mtcars), col = "blue", lty = 2)
+abline(rq(y ~ x), col = "blue")
+```
+
+```{R}
+###One final note: rq also supports more complicated formula.
+rq(mpg ~ wt - 1, data = mtcars)
+rq(mpg ~ wt + cyl, data = mtcars)
+rq(mpg ~ wt * cyl, data = mtcars)
+rq(mpg ~ ., data = mtcars)
+```
