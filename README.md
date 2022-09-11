@@ -1,5 +1,6 @@
 # Aprendizaje-estadistico-en-la-ciencia-actuarial
 Proyecto de tesina enfocado en la identificación y descripción de ciertos modelos predictivos en la ciencia actuarial.
+
 El área de inteligencia artificial, en particular el aprendizaje automático a través de modelado
 predictivo, ha permeado muchas áreas en la ciencia y se ha utilizado para distintas
 aplicaciones de la vida cotidiana. Se espera que ayude a mejorar la productividad, el binestar
